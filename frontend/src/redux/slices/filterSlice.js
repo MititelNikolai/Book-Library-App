@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   title: "",
+  author: "",
 };
 
 const filterSlice = createSlice({
@@ -13,6 +14,9 @@ const filterSlice = createSlice({
       //При использовании SLICE можно менять объект state, а не возвращать новое(Emmer)
       state.title = action.payload;
       //return {...state, title: action.payload} - Можно и так, как в традиционном подходе
+    },
+    setAuthorFilter: (state, action) => {
+      state.author = action.payload;
     },
     resetFilters: (state) => {
       return initialState;
@@ -36,8 +40,10 @@ const filterSlice = createSlice({
  */
 
 //Action (ReducerName = ActionName)
-export const { setTitleFilter, resetFilters } = filterSlice.actions;
+export const { setTitleFilter, resetFilters, setAuthorFilter } =
+  filterSlice.actions;
 //Часть состояния - title
 export const selectTitleFilter = (state) => state.filter.title;
+export const selectAuthorFilter = (state) => state.filter.author;
 //Reducer
 export default filterSlice.reducer;
