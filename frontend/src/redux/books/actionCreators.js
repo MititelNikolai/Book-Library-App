@@ -12,5 +12,11 @@ const deleteBook = (bookId) => {
     payload: bookId,
   };
 };
+const toggleFavorite = (bookId) => {
+  return {
+    type: a.TOGGLE_FAVORITE,
+    payload: bookId,
+  };
+};
 
-export { addBook, deleteBook };
+export { addBook, deleteBook, toggleFavorite };
