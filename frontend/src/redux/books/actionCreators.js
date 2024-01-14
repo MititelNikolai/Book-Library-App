@@ -6,5 +6,11 @@ const addBook = (newBook) => {
     payload: newBook,
   };
 };
+const deleteBook = (bookId) => {
+  return {
+    type: a.DELETE_BOOK,
+    payload: bookId,
+  };
+};
 
-export { addBook };
+export { addBook, deleteBook };
