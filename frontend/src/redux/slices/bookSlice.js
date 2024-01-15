@@ -6,7 +6,7 @@ const initialState = [];
 //Fetch Books from API with createAsyncThunk
 
 export const fetchBook = createAsyncThunk("books/fetchBook", async () => {
-  const res = await axios.get("http://local1host:4000/random-book");
+  const res = await axios.get("http://localhost:4000/random-book");
   return res.data;
 });
 const bookSlice = createSlice({
