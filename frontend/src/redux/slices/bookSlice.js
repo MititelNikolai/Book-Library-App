@@ -38,6 +38,16 @@ const bookSlice = createSlice({
       );
     },
   },
+  //OPTION 1
+  /* extraReducers: {
+    [fetchBook.fulfilled]: (state, action) => {
+      if (action?.payload.title && action?.payload.author) {
+        state.push(createBookWithId(action.payload, "API"));
+      }
+      //no call setError because reducer must be a pure function
+    }, //computed property name
+  }, */
+  //OPTION 2
   //If fulfilled -> create new reducer and return new state
   extraReducers: (builder) => {
     builder.addCase(fetchBook.fulfilled, (state, action) => {
