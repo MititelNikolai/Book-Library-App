@@ -12,7 +12,7 @@ const filterSlice = createSlice({
   reducers: {
     setTitleFilter: (state, action) => {
       //Reducer
-      //При использовании SLICE можно менять объект state, а не возвращать новое(Emmer)
+      //При использовании SLICE можно менять объект state, а не возвращать новое(Immer)
       state.title = action.payload;
       //return {...state, title: action.payload} - Можно и так, как в традиционном подходе
     },

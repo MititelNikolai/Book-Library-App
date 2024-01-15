@@ -1,14 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import createBookWithId from "../../utils/createBookWithId";
 import axios from "axios";
+import { setError } from "./errorSlice";
 const initialState = [];
 
 //Fetch Books from API with createAsyncThunk
 
-export const fetchBook = createAsyncThunk("books/fetchBook", async () => {
-  const res = await axios.get("http://localhost:4000/random-book");
-  return res.data;
-});
+export const fetchBook = createAsyncThunk(
+  "books/fetchBook",
+  async (url, thunkAPI) => {
+    //thunkAPI can dispatch new actions
+    try {
+      const res = await axios.get(url);
+      return res.data;
+    } catch (error) {
+      thunkAPI.dispatch(setError(error.message));
+      throw error; //Generate new error for  action.payload.title !== undefined
+      //Rejected
+    }
+  }
+);
 const bookSlice = createSlice({
   name: "books",
   initialState,
@@ -33,6 +44,7 @@ const bookSlice = createSlice({
       if (action?.payload.title && action?.payload.author) {
         state.push(createBookWithId(action.payload, "API"));
       }
+      //no call setError because reducer must be a pure function
     });
   },
 });
