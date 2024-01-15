@@ -2,7 +2,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import createBookWithId from "../../utils/createBookWithId";
 import axios from "axios";
 import { setError } from "./errorSlice";
-const initialState = [];
+const initialState = {
+  books: [],
+  isLoadingViaAPI: false,
+};
 
 //Fetch Books from API with createAsyncThunk
 
@@ -15,8 +18,11 @@ export const fetchBook = createAsyncThunk(
       return res.data;
     } catch (error) {
       thunkAPI.dispatch(setError(error.message));
-      throw error; //Generate new error for  action.payload.title !== undefined
-      //Rejected
+      //Option 1
+      return thunkAPI.rejectWithValue(error); //Generate new error for  action.payload.title !== undefined
+      //Option 2
+      /* throw error;  */
+      //Rejected */
     }
   }
 );
@@ -25,36 +31,53 @@ const bookSlice = createSlice({
   initialState,
   reducers: {
     addBook: (state, action) => {
-      return [...state, action.payload];
+      state.books.push(action.payload);
     },
     deleteBook: (state, action) => {
-      return state.filter((book) => book.id !== action.payload);
+      return {
+        ...state,
+        books: state.books.filter((book) => book.id !== action.payload),
+      };
     },
     toggleFavoriteBook: (state, action) => {
-      return state.map((book) =>
-        book.id === action.payload
-          ? { ...book, isFavorite: !book.isFavorite }
-          : book
+      state.books.forEach((book) =>
+        book.id === action.payload ? (book.isFavorite = !book.isFavorite) : book
       );
     },
   },
   //OPTION 1
-  /* extraReducers: {
+  /*   extraReducers: {
+    [fetchBook.pending]: (state) => {
+      state.isLoadingViaAPI = true;
+    },
+
     [fetchBook.fulfilled]: (state, action) => {
+      state.isLoadingViaAPI = false;
       if (action?.payload.title && action?.payload.author) {
-        state.push(createBookWithId(action.payload, "API"));
+        state.books.push(createBookWithId(action.payload, "API"));
       }
       //no call setError because reducer must be a pure function
     }, //computed property name
+    [fetchBook.rejected]: (state) => {
+      state.isLoadingViaAPI = false;
+    },
   }, */
   //OPTION 2
   //If fulfilled -> create new reducer and return new state
   extraReducers: (builder) => {
+    builder.addCase(fetchBook.pending, (state) => {
+      state.isLoadingViaAPI = true;
+    });
+
     builder.addCase(fetchBook.fulfilled, (state, action) => {
-      if (action?.payload.title && action?.payload.author) {
-        state.push(createBookWithId(action.payload, "API"));
+      state.isLoadingViaAPI = false;
+      if (action?.payload?.title && action?.payload?.author) {
+        state.books.push(createBookWithId(action.payload, "API"));
       }
       //no call setError because reducer must be a pure function
+    });
+    builder.addCase(fetchBook.rejected, (state) => {
+      state.isLoadingViaAPI = false;
     });
   },
 });
@@ -65,7 +88,8 @@ export const { addBook, deleteBook, toggleFavoriteBook } = bookSlice.actions;
 
 //Export States
 
-export const selectBook = (state) => state.books;
+export const selectBook = (state) => state.books.books;
+export const selectIsLoadingViaAPI = (state) => state.books.isLoadingViaAPI;
 
 //Export Reducer
 export default bookSlice.reducer;
